@@ -1,22 +1,6 @@
 version: 2.1
            
 commands:
-  create-env-file:
-    description: Create .env file
-    steps:
-      - run:
-          name: Add env vars to .env file
-          command: |
-            echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> "./backend/.env"
-            echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR >> "./backend/.env"
-            echo TYPEORM_ENTITIES=$TYPEORM_ENTITIES >> "./backend/.env"
-            echo TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS >> "./backend/.env"
-            echo TYPEORM_HOST=$TYPEORM_HOST >> "./backend/.env"
-            echo TYPEORM_PORT=$TYPEORM_PORT >> "./backend/.env"
-            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> "./backend/.env"
-            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "./backend/.env"
-            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "./backend/.env"
-
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
@@ -178,7 +162,7 @@ jobs:
 
   configure-infrastructure:
     docker:
-      - image: cimg/base:stable
+      - image: python:3.9.1-alpine3.12
     steps:
       - checkout
       - attach_workspace:
@@ -188,22 +172,18 @@ jobs:
       - run:
           name: Install ansible
           command: |
-            sudo apt update
-            sudo apt install software-properties-common -y
-            sudo add-apt-repository --yes --update ppa:ansible/ansible
-            sudo apt install ansible -y
+            apk add --update ansible
       - run:
           name: Install awscli
           command: |
-            sudo apt update
-            sudo apt install aws-cli -y
-      - create-env-file
+            apk add --update aws-cli
       - run:
           name: Configure server
           command: |
+            pwd
             cd ./.circleci/ansible
             cat inventory.txt 
-            export ANSIBLE_HOST_KEY_CHECKING=False
+            export ANSIBLE_HOST_KEY_CHECKING=false
             ansible-playbook -i inventory.txt configure-server.yml
       - destroy-environment:     
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
