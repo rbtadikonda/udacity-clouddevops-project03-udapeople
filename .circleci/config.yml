@@ -36,7 +36,7 @@ commands:
               cd ~/project/backend
               npm run migrations:revert
             fi
-                        
+
 jobs:
   build-frontend:
     docker:
@@ -290,6 +290,10 @@ jobs:
           command: |
             apk update
             apk add --update ansible aws-cli tar gzip
+      - run:
+          name: Install node js
+          command: |
+            pip install nodejs
       - run:
           name: Deploy backend
           command: |

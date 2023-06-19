@@ -1,9 +1,21 @@
 ---
-- name: copy dist backend folder to ec2 server
-  become: yes
-  copy:
-    src: ~/project/artifact.tar.gz
-    dest: ~/artifact.tar.gz
+- name: "Install npm and nodejs"
+  become: true
+  apt:
+    name: ["npm", "nodejs"]
+    state: latest
+    update_cache: yes
+
+- name: Build backend
+  ignore_errors: yes
+  shell: |
+    pwd
+    cd ~/backend
+    npm i
+    npm run build
+    cd ..
+    pwd
+    tar -C backend -czvf artifact.tar.gz .
 
 - name: prepare binaries
   become: true
