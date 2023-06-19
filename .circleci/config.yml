@@ -170,26 +170,28 @@ jobs:
                --output text >> ./.circleci/ansible/inventory.txt
             cat ./.circleci/ansible/inventory.txt
       - persist_to_workspace:
-          root: .
+          root: ./.circleci/ansible
           paths:
-            - ./.circleci/ansible/inventory.txt
+            - inventory.txt
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   configure-infrastructure:
     docker:
-      - image: python:3.9.1-alpine3.12
+      - image: cimg/base:stable
     steps:
       - checkout
       - attach_workspace:
-          #at: ./.circleci/ansible
-          at: .
+          at: ./.circleci/ansible
       - add_ssh_keys:
           fingerprints: ["df:33:ad:09:3c:dc:c9:64:e1:ba:82:7d:51:87:d7:63"]
       - run:
           name: Install ansible
           command: |
-            apk add --update ansible
+            sudo apt update
+            sudo apt install software-properties-common -y
+            sudo add-apt-repository --yes --update ppa:ansible/ansible
+            sudo apt install ansible -y
       - run:
           name: Install awscli
           command: |
