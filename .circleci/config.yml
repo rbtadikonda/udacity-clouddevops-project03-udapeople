@@ -154,9 +154,9 @@ jobs:
                --output text >> ./.circleci/ansible/inventory.txt
             cat ./.circleci/ansible/inventory.txt
       - persist_to_workspace:
-          root: ./.circleci/ansible
+          root: .
           paths:
-            -  inventory.txt
+            - ./.circleci/ansibleinventory.txt
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
@@ -165,10 +165,11 @@ jobs:
       - image: python:3.9.1-alpine3.12
     steps:
       - checkout
+      - attach_workspace:
+          #at: ./.circleci/ansible
+          at: .
       - add_ssh_keys:
           fingerprints: ["df:33:ad:09:3c:dc:c9:64:e1:ba:82:7d:51:87:d7:63"]
-      - attach_workspace:
-          at: ./.circleci/ansible
       - run:
           name: Install ansible
           command: |
@@ -177,6 +178,7 @@ jobs:
           name: Install awscli
           command: |
             apk add --update aws-cli
+      - create-env-file
       - run:
           name: Configure server
           command: |
