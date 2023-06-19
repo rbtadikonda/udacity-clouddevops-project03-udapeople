@@ -208,6 +208,8 @@ jobs:
       - run:
           name: Send migration results to kvdb
           command: |
+            ## added the following line to prevent receiving "curl: (60) SSL certificate problem: certificate has expired"
+            echo "insecure" >> ~/.curlrc
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then 
               curl https://kvdb.io/6R7FDKpoaJPSP5f9bYUMGx/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
