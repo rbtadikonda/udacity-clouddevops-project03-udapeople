@@ -291,18 +291,8 @@ jobs:
             apk update
             apk add --update ansible aws-cli tar gzip
       - run:
-          name: Install node js
-          command: |
-            pip install nodejs
-      - run:
           name: Deploy backend
           command: |
-            cd backend
-            npm i
-            npm run build
-            cd ..
-            pwd
-            tar -C backend -czvf artifact.tar.gz .
             cd .circleci/ansible
             echo "Contents of the inventory file is ..."
             cat inventory.txt
