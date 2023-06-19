@@ -195,7 +195,8 @@ jobs:
       - run:
           name: Install awscli
           command: |
-            apk add --update aws-cli
+            sudo apt update
+            sudo apt install aws-cli -y
       - create-env-file
       - run:
           name: Configure server
