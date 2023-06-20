@@ -286,18 +286,34 @@ jobs:
       - attach_workspace:
           at: ./.circleci/ansible
       - run:
-          name: Install dependencies
+          name: Install curl npm and nodejs
+          command: |
+            apk add curl
+            apk add --update npm nodejs
+      - run:
+          name: Install ansible aws-cli tar and gzip
           command: |
             apk update
             apk add --update ansible aws-cli tar gzip
       - run:
+          name: Install AwsCli
+          command: |
+            pip3 install awscli
+      - run:
           name: Deploy backend
           command: |
             pwd
-            cd .circleci/ansible
+            cd backend
+            npm i
+            npm run build
+            cd ..
+            tar -C backend -czvf artifact.tar.gz .
+            mkdir -p ~/project/.circleci/ansible/roles/deploy/files/ 
+            mv artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
             echo "Contents of the inventory file is ..."
-            cat inventory.txt
-            ansible-playbook -i inventory.txt deploy-backend.yml
+            cat .circleci/ansible/inventory.txt
+            ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
+
       #- destroy-environment:     
       #    workflow_id: ${CIRCLE_WORKFLOW_ID:0:7} 
       #- revert-migrations:
@@ -306,8 +322,8 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
-      - build-backend
+      #- build-frontend
+      #- build-backend
       #- test-frontend:
       #    requires: [build-frontend]
       #- test-backend:
@@ -316,14 +332,14 @@ workflows:
       #    requires: [build-frontend]
       #- scan-backend:
       #    requires: [build-backend]
-      - deploy-infrastructure:
+      #- deploy-infrastructure:
       #    requires: [scan-backend, scan-frontend, test-frontend, test-backend]
-           requires: [build-frontend, build-backend]
-      - configure-infrastructure:
-           requires: [deploy-infrastructure]
-      - run-migrations:
-           requires: [configure-infrastructure]
-      - deploy-frontend:
-           requires: [run-migrations]
-      - deploy-backend:
-           requires: [run-migrations]
+      #     requires: [build-frontend, build-backend]
+      #- configure-infrastructure:
+      #     requires: [deploy-infrastructure]
+      #- run-migrations:
+      #     requires: [configure-infrastructure]
+      - deploy-frontend #:
+      #     requires: [run-migrations]
+      - deploy-backend #:
+      #     requires: [run-migrations]

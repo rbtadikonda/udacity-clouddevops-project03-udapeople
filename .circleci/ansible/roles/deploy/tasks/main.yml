@@ -1,30 +1,21 @@
----
-- name: "Install npm and nodejs"
-  become: true
+- name: install tar
   apt:
-    name: ["npm", "nodejs"]
-    state: latest
-    update_cache: yes
+    name: tar
+    state: present
 
-- name: Build backend
-  ignore_errors: yes
-  shell: |
-    pwd
-    cd /root/project/backend
-    npm i
-    npm run build
-    cd ..
-    pwd
-    tar -C backend -czvf artifact.tar.gz .
-
-- name: prepare binaries
+- name: extract artifact
   become: true
-  shell: |
-    cd ~
-    tar xvzf artifact.tar.gz -C .
+  unarchive:
+    src: files/artifact.tar.gz 
+    dest: .
 
-- name: start the server and app
+- name: install pm2
   become: true
-  shell: |
-    cd ~
-    pm2 start npm --name backend -- start
+  npm:
+    name: pm2
+    global: true
+    production: true
+    state: present
+
+- name: "npm version"
+  shell: npm -version
