@@ -10,7 +10,7 @@
   ignore_errors: yes
   shell: |
     pwd
-    cd ~/backend
+    cd /root/project/backend
     npm i
     npm run build
     cd ..
