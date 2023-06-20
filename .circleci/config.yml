@@ -245,10 +245,13 @@ jobs:
           at: . 
       - run:
           name: Install tar
-          command: yum install -y tar gzip
+          command: yum install -y tar gzip curl
       - run:
           name: Install node
-          command: yum install -y nodejs
+          command: |
+            curl -sL https://rpm.nodesource.com/setup_14.x | sudo bash -
+            yum install -y nodejs
+            node --version
       - run:
           name: Get backend url
           command: |
@@ -322,8 +325,8 @@ jobs:
 workflows:
   default:
     jobs:
-      #- build-frontend
-      #- build-backend
+      - build-frontend
+      - build-backend
       #- test-frontend:
       #    requires: [build-frontend]
       #- test-backend:
@@ -332,14 +335,14 @@ workflows:
       #    requires: [build-frontend]
       #- scan-backend:
       #    requires: [build-backend]
-      #- deploy-infrastructure:
+      - deploy-infrastructure:
       #    requires: [scan-backend, scan-frontend, test-frontend, test-backend]
-      #     requires: [build-frontend, build-backend]
-      #- configure-infrastructure:
-      #     requires: [deploy-infrastructure]
-      #- run-migrations:
-      #     requires: [configure-infrastructure]
-      - deploy-frontend #:
-      #     requires: [run-migrations]
-      #- deploy-backend #:
-      #     requires: [run-migrations]
+           requires: [build-frontend, build-backend]
+      - configure-infrastructure:
+           requires: [deploy-infrastructure]
+      - run-migrations:
+           requires: [configure-infrastructure]
+      - deploy-frontend:
+           requires: [run-migrations]
+      - deploy-backend:
+           requires: [run-migrations]
