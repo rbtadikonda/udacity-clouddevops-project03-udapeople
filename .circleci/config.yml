@@ -244,11 +244,11 @@ jobs:
       - attach_workspace:
           at: . 
       - run:
+          name: Install tar
+          command: yum install -y tar gzip
+      - run:
           name: Install node
           command: yum install -y nodejs
-      - run:
-          name: Install tar
-          command: yum install -y tar
       - run:
           name: Get backend url
           command: |
