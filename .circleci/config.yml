@@ -248,7 +248,7 @@ jobs:
           command: yum install -y nodejs
       - run:
           name: Install tar
-          command: yum -y install tar
+          command: yum install -y tar
       - run:
           name: Get backend url
           command: |
@@ -341,5 +341,5 @@ workflows:
       #     requires: [configure-infrastructure]
       - deploy-frontend #:
       #     requires: [run-migrations]
-      - deploy-backend #:
+      #- deploy-backend #:
       #     requires: [run-migrations]
