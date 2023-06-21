@@ -1,4 +1,5 @@
 - name: install tar
+  become: true
   apt:
     name: tar
     state: present
