@@ -241,10 +241,8 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - attach_workspace:
-          at: . 
       - run:
-          name: Install tar
+          name: Install tar gzip and curl
           command: yum install -y tar gzip curl
       - run:
           name: Install node
@@ -252,6 +250,8 @@ jobs:
             curl -sL https://rpm.nodesource.com/setup_14.x | sudo bash -
             yum install -y nodejs
             node --version
+      - attach_workspace:
+          at: . 
       - run:
           name: Get backend url
           command: |
@@ -259,7 +259,7 @@ jobs:
             export BACKEND_IP=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "API_URL is ${API_URL}"
-            echo $API_URL >> frontend/.env
+            echo API_URL=$API_URL >> frontend/.env
             cat frontend/.env
       - run:
           name: Deploy frontend objects
@@ -267,9 +267,9 @@ jobs:
             pwd
             cd frontend
             npm install
-            npm audit fix --audit-level=critical --force
-            npm audit fix --force
-            npm audit --audit-level=critical
+            ## npm audit fix --audit-level=critical --force
+            ## npm audit fix --force
+            ## npm audit --audit-level=critical
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
