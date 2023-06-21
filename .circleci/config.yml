@@ -327,6 +327,8 @@ jobs:
       - image: python:3.11-rc-alpine
     steps:
       - checkout
+      - attach_workspace:
+          at: ./.circleci/ansible
       - run:
           name: Install curl npm and nodjs
           command: |
