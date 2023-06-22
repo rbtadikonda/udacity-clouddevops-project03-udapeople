@@ -362,6 +362,7 @@ jobs:
           command: |
             pwd
             cd backend
+            cat .env
             npm i
             npm run build
             cd ..
