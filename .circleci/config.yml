@@ -29,9 +29,10 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            export SUCCESS=$(curl --insecure  https://kvdb.io/6R7FDKpoaJPSP5f9bYUMGx/migration_<< parameters.workflow_id >>)
+            SUCCESS=$(curl --insecure  https://kvdb.io/6R7FDKpoaJPSP5f9bYUMGx/migration_<< parameters.workflow_id >>)
             echo "SUCCESS $SUCCESS"
-            if(( SUCCESS == 1 )); 
+            export $SUCCESS
+            if(( $SUCCESS == 1 )); 
             then
               cd ~/project/backend
               npm install
@@ -276,6 +277,8 @@ jobs:
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+            #Let the failure happen on frontend to test revert migration as we will be in amazon cli now
+            return 1
 
       - destroy-environment:     
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
@@ -361,7 +364,7 @@ jobs:
             export BACKEND_API_URL="http://${BACKEND_IP}:3030"
             if curl -s "${BACKEND_API_URL}/api/status" | grep "ok"
             then 
-              return 1
+              return 0
             else
               return 1
             fi
