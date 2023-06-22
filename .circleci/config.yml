@@ -408,7 +408,7 @@ jobs:
 
             echo "============================="
             echo "old workflow id is "
-            cat ~/OldWorkflowId.txt
+            cat ~/OldWorkflowID.txt
             echo "============================="
 
             echo "=============================="
