@@ -422,7 +422,7 @@ jobs:
               --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
               --tags project=udapeople
       - persist_to_workspace:
-          root: ~/
+          root: /home/ubuntu
           paths:
             - OldWorkflowID.txt
 
@@ -436,17 +436,16 @@ jobs:
           command: |
             yum install -y tar gzip
       - attach_workspace:
-          at: ~/      
-      - run:
-          name: Get  workflow id from previous deployments
-          command: |
-            ## Fetch the Old workflow ID from the file we save earlier
-            export OldWorkflowID="$(cat ~/OldWorkflowID.txt)"
-            echo "OldWorkflowID is $OldWorkflowID"
-
+          at: /home/ubuntu      
       - run:
           name: Remove old stacks and files
           command: |
+            ## Fetch the Old workflow ID from the file we save earlier
+            cat /home/ubuntu/OldWorkflowID.txt
+            echo "$(cat /home/ubuntu/OldWorkflowID.txt)"
+            export OldWorkflowID="$(cat /home/ubuntu/OldWorkflowID.txt)"
+            echo "OldWorkflowID is $OldWorkflowID"
+
             echo "============================remove old stacks and files======================="
             echo "current workflow id aka CIRCLE_WORKFLOW_ID(0:7)  is ${CIRCLE_WORKFLOW_ID:0:7}"
             echo "oldWorkflowID is ${OldWorkflowID}"
