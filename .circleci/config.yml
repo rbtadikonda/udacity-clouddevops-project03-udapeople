@@ -311,11 +311,11 @@ jobs:
             npm run build
             cd ..
             tar -C backend -czvf artifact.tar.gz .
-            mkdir -p ~/project/.circleci/ansible/roles/deploy/files/ 
-            mv artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
+            echo "pwd $PWD after archive is created"
             echo "Contents of the inventory file is ..."
             cat .circleci/ansible/inventory.txt
-            ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
+            cd .circleci/ansible
+            ansible-playbook -i inventory.txt deploy-backend.yml
 
       - destroy-environment:     
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7} 
@@ -335,16 +335,12 @@ jobs:
             apk add curl
             apk add --update npm nodejs
       - run:
-          name: Get backend url
-          command: |
-            cat frontend/.env
-            cat frontend/.env | awk 'END{print}' >> backend-ip.txt
-      - run:
           name: Backend smoke test.
           command: |
-            export BACKEND_URL=$(cat backend-ip.txt)
-            echo "BACKEND_URL=${BACKEND_URL}"
-            if curl -s "${BACKEND_URL}"/api/status | grep "ok"
+            export BACKEND_IP=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
+            echo "smoketest BACKEND_IP=${BACKEND_IP}"
+            export BACKEND_API_URL="http://${BACKEND_IP}:3030"
+            if curl -s ${BACKEND_API_URL}/api/status | grep "ok"
             then 
               return 0
             else
@@ -376,15 +372,15 @@ workflows:
       #    requires: [build-frontend]
       #- scan-backend:
       #    requires: [build-backend]
-      #- deploy-infrastructure:
+      - deploy-infrastructure #:
       #    requires: [scan-backend, scan-frontend, test-frontend, test-backend]
       #     requires: [build-frontend, build-backend]
-      #- configure-infrastructure:
-      #     requires: [deploy-infrastructure]
-      #- run-migrations:
-      #     requires: [configure-infrastructure]
-      #- deploy-frontend:
-      #     requires: [run-migrations]
-      #- deploy-backend:
-      #     requires: [run-migrations]
+      - configure-infrastructure:
+           requires: [deploy-infrastructure]
+      - run-migrations:
+           requires: [configure-infrastructure]
+      - deploy-frontend:
+           requires: [run-migrations]
+      - deploy-backend:
+           requires: [run-migrations]
       - smoke-test
