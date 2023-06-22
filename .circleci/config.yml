@@ -29,9 +29,9 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            ##SUCCESS=$(curl https://kvdb.io/6R7FDKpoaJPSP5f9bYUMGx/migration_<< parameters.workflow_id >>)
+            #SUCCESS=$(curl https://kvdb.io/6R7FDKpoaJPSP5f9bYUMGx/migration_<< parameters.workflow_id >>)
             SUCCESS=1
-            if(( $SUCCESS==1 )); 
+            if(( $SUCCESS == 1 )); 
             then
               cd ~/project/backend
               npm install
@@ -264,7 +264,7 @@ jobs:
       - run:
           name: Deploy frontend objects
           command: |
-            pwd
+            pwdddddd
             cd frontend
             npm install
             ## npm audit fix --audit-level=critical --force
@@ -404,6 +404,30 @@ jobs:
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
             fi
 
+  cloudfront-update:
+    docker:
+      image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Install dependentar and gzip
+          command: |
+            yum install -y tar gzip
+      - run:
+          name: install nodejs
+          command: |
+            curl -fsSL https://rpm.nodesource.com/setup_16.x | bash - 
+            yum install -y nodejs
+
+      - run:
+          name: change origin of cloudfront distribution to new S3 bucket (promotion phase)
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/cloudfront.yml \
+              --stack-name InitialStack \
+              --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --tags project=udapeople
+
 workflows:
   default:
     jobs:
@@ -430,3 +454,5 @@ workflows:
            requires: [run-migrations]
       - smoke-test:
            requires: [deploy-backend, deploy-frontend]
+      - cleanup:
+           requires: [smoke-test]
