@@ -424,6 +424,10 @@ jobs:
       - attach_workspace:
           at: ~/      
       - run:
+          name: Install tar and gzip
+          command: |
+            yum install -y tar gzip
+      - run:
           name: Get  workflow id from previous deployments
           command: |
             ## Fetch the Old workflow ID from the file we save earlier
