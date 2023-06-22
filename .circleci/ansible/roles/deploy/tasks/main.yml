@@ -7,8 +7,15 @@
 - name: extract artifact
   become: true
   unarchive:
-    src: files/artifact.tar.gz 
-    dest: .
+    src: artifact.tar.gz 
+    dest: ~/artifact.tar.gz
+
+- name: prepare binaries
+  become: true 
+  shell: |
+    cd ~
+    pwd
+    tar xvzf artifact.tar.gz -C .
 
 - name: install pm2
   become: true
@@ -18,5 +25,9 @@
     production: true
     state: present
 
-- name: "npm version"
-  shell: npm -version
+- name: start the server
+  become: true 
+  shell: |
+    cd ~
+    pm2 start npm --name backend -- start
+
