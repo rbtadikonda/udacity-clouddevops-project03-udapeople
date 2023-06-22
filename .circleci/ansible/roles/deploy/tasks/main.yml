@@ -1,23 +1,16 @@
 ---
 
+- name: Create app folder
+  become: yes
+  file:
+    path: /home/ubuntu/udaapp
+    state: directory
+
 - name: install tar
   become: true
   apt:
     name: tar
     state: present
-
-- name: extract artifact
-  become: true
-  unarchive:
-    src: /root/project/artifact.tar.gz 
-    dest: ~
-
-- name: prepare binaries
-  become: true 
-  shell: |
-    cd ~
-    pwd
-    tar xvzf artifact.tar.gz -C .
 
 - name: install pm2
   become: true
@@ -26,6 +19,19 @@
     global: true
     production: true
     state: present
+
+- name: extract artifact
+  become: true
+  unarchive:
+    src: /root/project/artifact.tar.gz 
+    dest: /home/ubuntu/udaapp
+
+- name: prepare binaries
+  become: true 
+  shell: |
+    cd /home/ubuntu/udaapp
+    pwd
+    tar xvzf artifact.tar.gz -C .
 
 - name: start the server
   become: true 
