@@ -521,7 +521,7 @@ workflows:
           ## run deploy infra and the further downstream jobs only when main branch is checked-in
           filters:
             branches:
-              only: [main]
+              only: [master]
       - configure-infrastructure:
            requires: [deploy-infrastructure]
       - run-migrations:
