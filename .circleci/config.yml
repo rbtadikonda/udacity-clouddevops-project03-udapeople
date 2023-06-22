@@ -450,7 +450,7 @@ jobs:
 
             cd ~
             pwd 
-            ll
+            cat /root/OldWorkflowID.txt
       - persist_to_workspace:
           root: ~/
           paths:
@@ -495,8 +495,8 @@ workflows:
     jobs:
       - notify:
           context: slack-secrets
-      - build-frontend
-      - build-backend
+      #- build-frontend
+      #- build-backend
       #- test-frontend:
       #    requires: [build-frontend]
       #- test-backend:
@@ -518,7 +518,7 @@ workflows:
       #     requires: [run-migrations]
       #- smoke-test:
       #     requires: [deploy-backend, deploy-frontend]
-      #- cloudfront-update:
+      - cloudfront-update #:
       #     requires: [smoke-test]
-      - cleanup #:
-      #     requires: [cloudfront-update]
+      - cleanup:
+           requires: [cloudfront-update]
