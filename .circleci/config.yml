@@ -309,9 +309,6 @@ jobs:
           command: |
             pip3 install awscli
       - run:
-          name: Force a failure to demo revert migrations
-          command: return 1
-      - run:
           name: Add environment info to backend folder
           command: |
             echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION
