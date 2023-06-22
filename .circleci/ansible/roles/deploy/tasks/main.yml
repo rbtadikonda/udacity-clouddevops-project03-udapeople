@@ -1,3 +1,5 @@
+---
+
 - name: install tar
   become: true
   apt:
@@ -8,7 +10,7 @@
   become: true
   unarchive:
     src: /root/project/artifact.tar.gz 
-    dest: ~/artifact.tar.gz
+    dest: ~
 
 - name: prepare binaries
   become: true 
