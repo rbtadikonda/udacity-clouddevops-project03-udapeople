@@ -7,7 +7,7 @@
 - name: extract artifact
   become: true
   unarchive:
-    src: artifact.tar.gz 
+    src: /root/project/artifact.tar.gz 
     dest: ~/artifact.tar.gz
 
 - name: prepare binaries
