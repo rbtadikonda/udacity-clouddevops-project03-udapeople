@@ -29,11 +29,12 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            SUCCESS=$(curl https://kvdb.io/6R7FDKpoaJPSP5f9bYUMGx/migration_<< parameters.workflow_id >>)
-            SUCCESS = 1
+            ##SUCCESS=$(curl https://kvdb.io/6R7FDKpoaJPSP5f9bYUMGx/migration_<< parameters.workflow_id >>)
+            SUCCESS=1
             if(( $SUCCESS==1 )); 
             then
               cd ~/project/backend
+              npm install
               npm run migrations:revert
             fi
 
@@ -232,7 +233,6 @@ jobs:
             then 
               curl https://kvdb.io/6R7FDKpoaJPSP5f9bYUMGx/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
             fi  
-
       - destroy-environment:     
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}  
 
@@ -329,7 +329,6 @@ jobs:
             cat .circleci/ansible/inventory.txt
             cd .circleci/ansible
             ansible-playbook -i inventory.txt deploy-backend.yml
-
       - destroy-environment:     
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7} 
       - revert-migrations:
@@ -359,7 +358,7 @@ jobs:
             export BACKEND_API_URL="http://${BACKEND_IP}:3030"
             if curl -s "${BACKEND_API_URL}/api/status" | grep "ok"
             then 
-              return 0
+              return 1
             else
               return 1
             fi
@@ -370,9 +369,39 @@ jobs:
             echo "FRONTEND_URL=${FRONTEND_URL}"
             if curl -s ${FRONTEND_URL} | grep "Welcome"
               then
-                return 1
+                return 0
             else
                 return 1
+            fi
+      - destroy-environment:     
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7} 
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}  
+
+  cleanup:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Get old stack workflow id
+          command: |
+            ## Fetch the Old workflow ID
+            export OldWorkflowID=$(aws cloudformation \
+                  list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+                  --no-paginate --output text)
+            export OldWorkflowID="${OldWorkflowID}"
+            ## Fetch the stack names          
+            export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+                  --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
+      - run:
+          name: Remove old stacks and files
+          command: |
+            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+            then
+              aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+              aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
+              aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
             fi
 
 workflows:
