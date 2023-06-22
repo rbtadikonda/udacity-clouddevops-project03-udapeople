@@ -35,6 +35,9 @@ commands:
             then
               cd ~/project/backend
               npm install
+              npm audit fix --audit-level=critical --force
+              npm audit fix --force
+              npm audit --audit-level=critical
               npm run migrations:revert
             fi
 
@@ -264,7 +267,7 @@ jobs:
       - run:
           name: Deploy frontend objects
           command: |
-            pwdddddd
+            pwd
             cd frontend
             npm install
             ## npm audit fix --audit-level=critical --force
