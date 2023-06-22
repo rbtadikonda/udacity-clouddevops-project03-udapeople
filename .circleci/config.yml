@@ -472,7 +472,6 @@ jobs:
           command: |
             ## Fetch the Old workflow ID from the file we save earlier
             pwd
-            ll
             cat ~/OldWorkflowID.txt
             echo "$(cat ~/OldWorkflowID.txt)"
             export OldWorkflowID="$(cat ~/OldWorkflowID.txt)"
@@ -506,20 +505,20 @@ workflows:
       #    requires: [build-frontend]
       #- scan-backend:
       #    requires: [build-backend]
-      - deploy-infrastructure:
+      #- deploy-infrastructure:
       #    requires: [scan-backend, scan-frontend, test-frontend, test-backend]
-           requires: [build-frontend, build-backend]
-      - configure-infrastructure:
-           requires: [deploy-infrastructure]
-      - run-migrations:
-           requires: [configure-infrastructure]
-      - deploy-frontend:
-           requires: [run-migrations]
-      - deploy-backend:
-           requires: [run-migrations]
-      - smoke-test:
-           requires: [deploy-backend, deploy-frontend]
-      - cloudfront-update:
-           requires: [smoke-test]
-      - cleanup:
-           requires: [cloudfront-update]
+      #     requires: [build-frontend, build-backend]
+      #- configure-infrastructure:
+      #     requires: [deploy-infrastructure]
+      #- run-migrations:
+      #     requires: [configure-infrastructure]
+      #- deploy-frontend:
+      #     requires: [run-migrations]
+      #- deploy-backend:
+      #     requires: [run-migrations]
+      #- smoke-test:
+      #     requires: [deploy-backend, deploy-frontend]
+      #- cloudfront-update:
+      #     requires: [smoke-test]
+      - cleanup #:
+      #     requires: [cloudfront-update]
