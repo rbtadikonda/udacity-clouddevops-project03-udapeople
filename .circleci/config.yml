@@ -1,5 +1,10 @@
 version: 2.1
            
+version: 2.1
+
+orbs:
+  slack: circleci/slack@4.12.5
+
 commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -46,6 +51,29 @@ commands:
             #fi
 
 jobs:
+
+  notify:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - slack/notify:
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "plain_text",
+                      "text": "Your project udapeople failed to build",
+                      "emoji": true
+                    }
+                  ]
+                }
+              ]
+            }
+          event: fail
+
   build-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -421,8 +449,12 @@ jobs:
               --stack-name InitialStack \
               --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
               --tags project=udapeople
+
+            cd ~
+            pwd 
+            ll
       - persist_to_workspace:
-          root: /home/ubuntu
+          root: ~/
           paths:
             - OldWorkflowID.txt
 
@@ -436,14 +468,16 @@ jobs:
           command: |
             yum install -y tar gzip
       - attach_workspace:
-          at: /home/ubuntu      
+          at: ~/    
       - run:
           name: Remove old stacks and files
           command: |
             ## Fetch the Old workflow ID from the file we save earlier
-            cat /home/ubuntu/OldWorkflowID.txt
-            echo "$(cat /home/ubuntu/OldWorkflowID.txt)"
-            export OldWorkflowID="$(cat /home/ubuntu/OldWorkflowID.txt)"
+            pwd
+            ll
+            cat ~/OldWorkflowID.txt
+            echo "$(cat ~/OldWorkflowID.txt)"
+            export OldWorkflowID="$(cat ~/OldWorkflowID.txt)"
             echo "OldWorkflowID is $OldWorkflowID"
 
             echo "============================remove old stacks and files======================="
@@ -462,6 +496,8 @@ jobs:
 workflows:
   default:
     jobs:
+      - notify:
+          context: slack-secrets
       - build-frontend
       - build-backend
       #- test-frontend:
