@@ -512,13 +512,16 @@ workflows:
           requires: [build-frontend]
       - test-backend:
           requires: [build-backend]
-      #- scan-frontend:
-      #    requires: [build-frontend]
-      #- scan-backend:
-      #    requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
+      - scan-backend:
+          requires: [build-backend]
       - deploy-infrastructure:
-          #requires: [scan-backend, scan-frontend, test-frontend, test-backend]
-          requires: [build-frontend, build-backend]
+          requires: [scan-backend, scan-frontend, test-frontend, test-backend]
+          ## run deploy infra and the further downstream jobs only when main branch is checked-in
+          filters:
+            branches:
+              only: [main]
       - configure-infrastructure:
            requires: [deploy-infrastructure]
       - run-migrations:
