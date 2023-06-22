@@ -26,13 +26,6 @@
     src: /root/project/artifact.tar.gz 
     dest: /home/ubuntu/udaapp
 
-- name: prepare binaries
-  become: true 
-  shell: |
-    cd /home/ubuntu/udaapp
-    pwd
-    tar xvzf artifact.tar.gz -C .
-
 - name: start the server
   become: true 
   shell: |
