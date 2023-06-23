@@ -39,6 +39,7 @@ commands:
               echo "reverting migrations"
               pwd
               cd ~/project/backend
+              apk add --update nodejs npm
               npm install
               npm audit fix --audit-level=critical --force
               npm audit fix --force
