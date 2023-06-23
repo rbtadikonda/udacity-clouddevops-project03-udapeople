@@ -32,15 +32,11 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            ## knowledge base has reported so many issues with this approach and we know we hit this command
-            ## when a job fails, skipping the return code to take a screenshot for revert migrations as
-            ## this playbook could fail at any job and each job has its own flavor of docker image and they get their
-            ## own shell environment. 
-            #SUCCESS=$(curl --insecure  https://kvdb.io/TANbTyQG6h1uJkEXDJxuuC/migration_<< parameters.workflow_id >>)
             export SUCCESS=$(curl --insecure  https://kvdb.io/TANbTyQG6h1uJkEXDJxuuC/migration_<< parameters.workflow_id >>)
             echo $SUCCESS
-            if [[ "{$SUCCESS}" == 1 ]];
+            if [[ $SUCCESS == 1 ]];
             then
+              echo "reverting migrations"
               pwd
               cd ~/project/backend
               npm install
@@ -48,6 +44,8 @@ commands:
               npm audit fix --force
               npm audit --audit-level=critical
               npm run migrations:revert
+            else 
+              echo "unable to revert previous migration"
             fi
 
 jobs:
