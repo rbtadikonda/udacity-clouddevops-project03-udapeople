@@ -40,6 +40,7 @@ commands:
               pwd
               cd ~/project/backend
               apk add --update nodejs npm
+              npm i npm-install-peers -D
               npm install
               npm audit fix --audit-level=critical --force
               npm audit fix --force
