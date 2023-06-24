@@ -474,7 +474,6 @@ jobs:
             ## Fetch the Old workflow ID from the file we save earlier
             pwd
             cat ~/OldWorkflowID.txt
-            echo "$(cat ~/OldWorkflowID.txt)"
             export OldWorkflowID="$(cat ~/OldWorkflowID.txt)"
             echo "OldWorkflowID is $OldWorkflowID"
 
