@@ -372,6 +372,7 @@ jobs:
             cat .circleci/ansible/inventory.txt
             cd .circleci/ansible
             ansible-playbook -i inventory.txt deploy-backend.yml
+            pwdddddddd 
       - destroy-environment:     
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7} 
       - revert-migrations:
