@@ -38,6 +38,8 @@ commands:
             then
               echo "reverting migrations"
               cd ~/project/backend
+              npm update npm -g
+              npm install --legacy-peer-deps
               npm run migrations:revert
             else 
               echo "unable to revert previous migration"
@@ -494,8 +496,8 @@ workflows:
     jobs:
       - notify:
           context: slack-secrets
-      - build-frontend
-      - build-backend
+      #- build-frontend
+      #- build-backend
       #- test-frontend:
       #    requires: [build-frontend]
       #- test-backend:
