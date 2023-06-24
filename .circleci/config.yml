@@ -37,27 +37,7 @@ commands:
             if [[ $SUCCESS == 1 ]];
             then
               echo "reverting migrations"
-              pwd
               cd ~/project/backend
-              ls -al
-              #echo "RBT==>   remove package.json"
-              #rm package.json
-              #rm -Rf node_modules
-              #rm package-lock.json
-              #echo "RBT==> deleted package.json, package-lock.json, and node_modules directory"
-              #echo "RBT==> remove package-lock.json"
-              #rm package-lock.json
-              echo "RBT==>  npm version $(npm -v)"
-              echo "RBT==>  npm update"
-              #npm update npm -g
-              #npm install --legacy-peer-deps
-              echo "RBT==>  npm audit fix audit level critical force"
-              #npm audit fix --audit-level=critical --force
-              echo "RBT==>  npm audit fix force"
-              #npm audit fix --force
-              echo "RBT==>  npm audit audit level critical"
-              #npm audit --audit-level=critical
-              echo RBT==>  "npm run migrations revert"
               npm run migrations:revert
             else 
               echo "unable to revert previous migration"
@@ -378,14 +358,13 @@ jobs:
             npm run build
             cd ..
             tar -C backend -czvf artifact.tar.gz .
-            echo "pwd $PWD after archive is created"
             echo "Contents of the inventory file is ..."
             cat .circleci/ansible/inventory.txt
             cd .circleci/ansible
             ansible-playbook -i inventory.txt deploy-backend.yml
             pwdddddddd 
-      #- destroy-environment:     
-      #    workflow_id: ${CIRCLE_WORKFLOW_ID:0:7} 
+      - destroy-environment:     
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7} 
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}  
 
@@ -528,17 +507,17 @@ workflows:
       #    requires: [build-frontend]
       #- scan-backend:
       #    requires: [build-backend]
-      - deploy-infrastructure:
-          #requires: [scan-backend, scan-frontend, test-frontend, test-backend]
-          requires: [build-frontend, build-backend]
+      #- deploy-infrastructure:
+      #    requires: [scan-backend, scan-frontend, test-frontend, test-backend]
+      #    requires: [build-frontend, build-backend]
           ## run deploy infra and the further downstream jobs only when main branch is checked-in
-          filters:
-            branches:
-              only: [master]
-      - configure-infrastructure:
-           requires: [deploy-infrastructure]
-      - run-migrations:
-           requires: [configure-infrastructure]
+      #    filters:
+      #      branches:
+      #        only: [master]
+      #- configure-infrastructure:
+      #     requires: [deploy-infrastructure]
+      - run-migrations #:
+      #     requires: [configure-infrastructure]
       #- deploy-frontend:
       #     requires: [run-migrations]
       - deploy-backend:
