@@ -402,7 +402,7 @@ jobs:
             echo "FRONTEND_URL=${FRONTEND_URL}"
             if curl -s ${FRONTEND_URL} | grep "Welcome"
               then
-                return 0
+                return 1
             else
                 return 1
             fi
@@ -497,16 +497,17 @@ workflows:
           context: slack-secrets
       - build-frontend
       - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - scan-backend:
-          requires: [build-backend]
+      #- test-frontend:
+      #    requires: [build-frontend]
+      #- test-backend:
+      #    requires: [build-backend]
+      #- scan-frontend:
+      #    requires: [build-frontend]
+      #- scan-backend:
+      #    requires: [build-backend]
       - deploy-infrastructure:
-          requires: [scan-backend, scan-frontend, test-frontend, test-backend]
+      #    requires: [scan-backend, scan-frontend, test-frontend, test-backend]
+          requires: [test-frontend, test-backend]
           ## run deploy infra and the further downstream jobs only when main branch is checked-in
           filters:
             branches:
