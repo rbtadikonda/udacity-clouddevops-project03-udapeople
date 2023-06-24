@@ -362,7 +362,6 @@ jobs:
             cat .circleci/ansible/inventory.txt
             cd .circleci/ansible
             ansible-playbook -i inventory.txt deploy-backend.yml
-            pwdddddddd 
       - destroy-environment:     
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7} 
       - revert-migrations:
@@ -403,7 +402,7 @@ jobs:
             echo "FRONTEND_URL=${FRONTEND_URL}"
             if curl -s ${FRONTEND_URL} | grep "Welcome"
               then
-                return 0
+                return 1 #simulate a forced failure
             else
                 return 1
             fi
@@ -507,23 +506,23 @@ workflows:
       #    requires: [build-frontend]
       #- scan-backend:
       #    requires: [build-backend]
-      #- deploy-infrastructure:
+      - deploy-infrastructure:
       #    requires: [scan-backend, scan-frontend, test-frontend, test-backend]
-      #    requires: [build-frontend, build-backend]
+          requires: [build-frontend, build-backend]
           ## run deploy infra and the further downstream jobs only when main branch is checked-in
       #    filters:
       #      branches:
       #        only: [master]
-      #- configure-infrastructure:
-      #     requires: [deploy-infrastructure]
-      - run-migrations #:
-      #     requires: [configure-infrastructure]
-      #- deploy-frontend:
-      #     requires: [run-migrations]
+      - configure-infrastructure:
+           requires: [deploy-infrastructure]
+      - run-migrations:
+           requires: [configure-infrastructure]
+      - deploy-frontend:
+           requires: [run-migrations]
       - deploy-backend:
            requires: [run-migrations]
-      #- smoke-test:
-      #     requires: [deploy-backend, deploy-frontend]
+      - smoke-test:
+           requires: [deploy-backend, deploy-frontend]
       #- cloudfront-update:
       #     requires: [smoke-test]
       #- cleanup:
