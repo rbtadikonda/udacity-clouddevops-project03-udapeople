@@ -41,6 +41,9 @@ commands:
               cd ~/project/backend
               echo "RBT==>   remove package.json"
               rm package.json
+              rm -Rf node_modules
+              rm package-lock.json
+              echo "RBT==> deleted package.json, package-lock.json, and node_modules directory"
               echo "RBT==> remove package-lock.json"
               rm package-lock.json
               echo "RBT==>  npm version $(npm -v)"
@@ -379,11 +382,11 @@ jobs:
             cat .circleci/ansible/inventory.txt
             cd .circleci/ansible
             ansible-playbook -i inventory.txt deploy-backend.yml
-            #pwdddddddd 
+            pwdddddddd 
       #- destroy-environment:     
       #    workflow_id: ${CIRCLE_WORKFLOW_ID:0:7} 
-      #- revert-migrations:
-      #    workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}  
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}  
 
   smoke-test:
     docker:
