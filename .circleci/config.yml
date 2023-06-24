@@ -39,17 +39,21 @@ commands:
               echo "reverting migrations"
               pwd
               cd ~/project/backend
-              echo "npm version $(npm -v)"
-              echo "npm update"
+              echo "RBT==>   remove package.json"
+              rm package.json
+              echo "RBT==> remove package-lock.json"
+              rm package-lock.json
+              echo "RBT==>  npm version $(npm -v)"
+              echo "RBT==>  npm update"
               npm update npm -g
               npm install --legacy-peer-deps
-              echo "npm audit fix audit level critical force"
+              echo "RBT==>  npm audit fix audit level critical force"
               npm audit fix --audit-level=critical --force
-              echo "npm audit fix force"
+              echo "RBT==>  npm audit fix force"
               npm audit fix --force
-              echo "npm audit audit level critical"
+              echo "RBT==>  npm audit audit level critical"
               npm audit --audit-level=critical
-              echo "npm run migrations revert"
+              echo RBT==>  "npm run migrations revert"
               npm run migrations:revert
             else 
               echo "unable to revert previous migration"
@@ -322,10 +326,10 @@ jobs:
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
             pwdddddd
-      - destroy-environment:     
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
-      - revert-migrations:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}  
+      #- destroy-environment:     
+      #    workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
+      #- revert-migrations:
+      #    workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}  
 
   deploy-backend:
     docker:
@@ -381,11 +385,11 @@ jobs:
             cat .circleci/ansible/inventory.txt
             cd .circleci/ansible
             ansible-playbook -i inventory.txt deploy-backend.yml
-            pwdddddddd 
-      - destroy-environment:     
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7} 
-      - revert-migrations:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}  
+            #pwdddddddd 
+      #- destroy-environment:     
+      #    workflow_id: ${CIRCLE_WORKFLOW_ID:0:7} 
+      #- revert-migrations:
+      #    workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}  
 
   smoke-test:
     docker:
