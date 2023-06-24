@@ -40,6 +40,8 @@ commands:
               pwd
               cd ~/project/backend
               echo "npm version $(npm -v)"
+              echo "npm update"
+              npm update npm -g
               npm install --legacy-peer-deps
               echo "npm audit fix audit level critical force"
               npm audit fix --audit-level=critical --force
@@ -47,8 +49,6 @@ commands:
               npm audit fix --force
               echo "npm audit audit level critical"
               npm audit --audit-level=critical
-              echo "npm update"
-              npm update
               echo "npm run migrations revert"
               npm run migrations:revert
             else 
@@ -370,6 +370,9 @@ jobs:
             cd backend
             cat .env
             npm i
+            npm audit fix --audit-level=critical --force
+            npm audit fix --force
+            npm audit --audit-level=critical
             npm run build
             cd ..
             tar -C backend -czvf artifact.tar.gz .
