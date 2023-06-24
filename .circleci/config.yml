@@ -73,7 +73,6 @@ jobs:
           event: pass
           template: success_tagged_deploy_1
 
-
   build-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -306,11 +305,10 @@ jobs:
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-            pwdddddd
-      #- destroy-environment:     
-      #    workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
-      #- revert-migrations:
-      #    workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}  
+      - destroy-environment:     
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}  
 
   deploy-backend:
     docker:
