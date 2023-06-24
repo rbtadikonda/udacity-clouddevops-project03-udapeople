@@ -39,13 +39,14 @@ commands:
               echo "reverting migrations"
               pwd
               cd ~/project/backend
-              echo "RBT==>   remove package.json"
-              rm package.json
-              rm -Rf node_modules
-              rm package-lock.json
-              echo "RBT==> deleted package.json, package-lock.json, and node_modules directory"
-              echo "RBT==> remove package-lock.json"
-              rm package-lock.json
+              ls -al
+              #echo "RBT==>   remove package.json"
+              #rm package.json
+              #rm -Rf node_modules
+              #rm package-lock.json
+              #echo "RBT==> deleted package.json, package-lock.json, and node_modules directory"
+              #echo "RBT==> remove package-lock.json"
+              #rm package-lock.json
               echo "RBT==>  npm version $(npm -v)"
               echo "RBT==>  npm update"
               npm update npm -g
